@@ -3,173 +3,198 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>abedin hard team</title>
+<title>Abedin Hard Team</title>
 
 <style>
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 body{
-    background: linear-gradient(135deg,#eef2f7,#dbe6f6);
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    overflow:hidden;
+    color:white;
+}
+
+/* ===== INTRO SCREEN ===== */
+
+.intro{
+    position:fixed;
+    width:100%;
+    height:100vh;
+    background:linear-gradient(135deg,#000428,#004e92);
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
+    flex-direction:column;
+    z-index:1000;
 }
 
-.container{
-    width:90%;
-    max-width:1100px;
-    background:#fff;
-    border-radius:25px;
-    padding:30px;
-    box-shadow:0 20px 50px rgba(0,0,0,0.1);
-    animation:fadeIn 1.5s ease-in-out;
+.intro h1{
+    font-size:50px;
+    letter-spacing:4px;
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+.intro p{
+    margin-top:15px;
+    font-size:20px;
+    opacity:0;
+    animation: fadeIn 2s ease forwards;
+    animation-delay:1s;
+}
+
+@keyframes glow{
+    from{ text-shadow:0 0 10px #00f2ff; }
+    to{ text-shadow:0 0 25px #00f2ff, 0 0 40px #00f2ff; }
+}
+
+@keyframes fadeIn{
+    to{ opacity:1; }
+}
+
+/* ===== MAIN SITE ===== */
+
+.main{
+    opacity:0;
+    transition:1.5s ease;
+    padding:40px;
 }
 
 header{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:30px;
+    margin-bottom:50px;
 }
 
-header h1{
-    font-size:28px;
-    color:#1e2a78;
+header h2{
+    font-size:32px;
+    font-weight:600;
 }
 
-header p{
+.ceo-tag{
+    background:rgba(255,255,255,0.1);
+    padding:8px 20px;
+    border-radius:30px;
+    backdrop-filter:blur(10px);
     font-size:14px;
-    color:gray;
 }
 
-.dashboard{
+.cards{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:30px;
 }
 
 .card{
-    background:#f8faff;
-    padding:20px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    padding:30px;
     border-radius:20px;
-    box-shadow:0 10px 20px rgba(0,0,0,0.05);
-    transition:0.4s;
-    position:relative;
-    overflow:hidden;
+    transition:0.5s;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
 .card:hover{
-    transform:translateY(-10px);
+    transform:translateY(-15px);
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
 }
 
 .card h3{
-    font-size:18px;
-    margin-bottom:10px;
+    margin-bottom:15px;
+    font-weight:500;
 }
 
-.number{
-    font-size:28px;
+.counter{
+    font-size:35px;
     font-weight:bold;
-    color:#1e2a78;
+    color:#00f2ff;
 }
 
-.circle{
-    width:120px;
-    height:120px;
-    border-radius:50%;
-    border:10px solid #dbe6f6;
-    border-top:10px solid #1e2a78;
-    margin:15px auto;
-    animation:spin 3s linear infinite;
-}
-
-.footer{
-    margin-top:30px;
+footer{
+    margin-top:60px;
     text-align:center;
     font-size:14px;
-    color:#555;
-}
-
-/* Animations */
-@keyframes spin{
-    0%{transform:rotate(0deg);}
-    100%{transform:rotate(360deg);}
-}
-
-@keyframes fadeIn{
-    from{opacity:0; transform:translateY(30px);}
-    to{opacity:1; transform:translateY(0);}
+    opacity:0.7;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<header>
-    <div>
-        <h1>abedin hard team</h1>
-        <p>owner joynal abedin start working 2022</p>
-    </div>
-</header>
-
-<div class="dashboard">
-
-    <div class="card">
-        <h3>Team Power</h3>
-        <div class="number" id="power">0</div>
-    </div>
-
-    <div class="card">
-        <h3>Active Members</h3>
-        <div class="number" id="members">0</div>
-    </div>
-
-    <div class="card">
-        <h3>Work Progress</h3>
-        <div class="circle"></div>
-    </div>
-
-    <div class="card">
-        <h3>Projects Complete</h3>
-        <div class="number" id="projects">0</div>
-    </div>
-
+<!-- INTRO -->
+<div class="intro" id="intro">
+    <h1>CEO JOYNAL ABEDIN</h1>
+    <p>Welcome To Abedin Hard Team</p>
 </div>
 
-<div class="footer">
-    © 2022 - 2026 abedin hard team | All Rights Reserved
-</div>
+<!-- MAIN WEBSITE -->
+<div class="main" id="main">
+    <header>
+        <h2>Abedin Hard Team</h2>
+        <div class="ceo-tag">Owner & CEO • Start Working 2022</div>
+    </header>
 
+    <div class="cards">
+        <div class="card">
+            <h3>Team Strength</h3>
+            <div class="counter" id="c1">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Active Members</h3>
+            <div class="counter" id="c2">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Projects Completed</h3>
+            <div class="counter" id="c3">0</div>
+        </div>
+    </div>
+
+    <footer>
+        © 2022 - 2026 Abedin Hard Team | All Rights Reserved
+    </footer>
 </div>
 
 <script>
-// Counter Animation
-function counter(id, start, end, speed){
-    let obj = document.getElementById(id);
-    let current = start;
-    let increment = end / speed;
 
-    let interval = setInterval(()=>{
-        current += increment;
-        if(current >= end){
-            current = end;
+// Intro Screen Hide After 3 Seconds
+setTimeout(()=>{
+    document.getElementById("intro").style.opacity="0";
+    document.getElementById("intro").style.transition="1s";
+
+    setTimeout(()=>{
+        document.getElementById("intro").style.display="none";
+        document.getElementById("main").style.opacity="1";
+        document.body.style.overflow="auto";
+    },1000);
+
+},3000);
+
+
+// Counter Animation
+function counter(id,end){
+    let obj=document.getElementById(id);
+    let count=0;
+    let interval=setInterval(()=>{
+        count++;
+        obj.innerText=count;
+        if(count>=end){
             clearInterval(interval);
         }
-        obj.innerText = Math.floor(current);
     },20);
 }
 
-counter("power",0,100,50);
-counter("members",0,75,50);
-counter("projects",0,120,50);
+setTimeout(()=>{
+    counter("c1",100);
+    counter("c2",75);
+    counter("c3",150);
+},3500);
 
 </script>
 
