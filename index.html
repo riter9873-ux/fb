@@ -1,114 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Facebook Clone</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <style>
-    body{
-      margin:0;
-      font-family:Arial;
-      background:#f0f2f5;
-    }
-
-    .page{
-      display:none;
-      padding:20px;
-    }
-
-    .box{
-      max-width:350px;
-      margin:80px auto;
-      background:white;
-      padding:20px;
-      border-radius:8px;
-      box-shadow:0 0 10px rgba(0,0,0,0.1);
-    }
-
-    input{
-      width:100%;
-      padding:10px;
-      margin:5px 0;
-    }
-
-    button{
-      width:100%;
-      padding:10px;
-      margin-top:10px;
-      border:none;
-      background:#1877f2;
-      color:white;
-      font-weight:bold;
-      cursor:pointer;
-    }
-
-    .nav{
-      background:#1877f2;
-      color:white;
-      padding:10px;
-      display:flex;
-      justify-content:space-between;
-    }
-
-    .post{
-      background:white;
-      padding:15px;
-      margin:10px 0;
-      border-radius:5px;
-    }
-  </style>
-</head>
-
-<body>
-
-<!-- LOGIN -->
-<div id="login" class="page">
-  <div class="box">
-    <h2 style="text-align:center;">Facebook</h2>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPass" placeholder="Password">
-    <button onclick="login()">Log In</button>
-    <button onclick="showPage('signup')">Create New Account</button>
-    <p id="msg" style="color:red;"></p>
-  </div>
-</div>
-
-<!-- SIGNUP -->
-<div id="signup" class="page">
-  <div class="box">
-    <h2>Create Account</h2>
-    <input type="email" id="signupEmail" placeholder="Email">
-    <input type="password" id="signupPass" placeholder="Password">
-    <button onclick="signup()">Sign Up</button>
-    <button onclick="showPage('login')">Back</button>
-  </div>
-</div>
-
-<!-- HOME -->
-<div id="home" class="page">
-  <div class="nav">
-    <span onclick="showPage('profile')" style="cursor:pointer;">Profile</span>
-    <span onclick="logout()" style="cursor:pointer;">Logout</span>
-  </div>
-
-  <h3>Welcome</h3>
-  <p id="userEmail"></p>
-
-  <div class="post">Post 1</div>
-  <div class="post">Post 2</div>
-</div>
-
-<!-- PROFILE -->
-<div id="profile" class="page">
-  <div class="nav">
-    <span onclick="showPage('home')" style="cursor:pointer;">Home</span>
-    <span onclick="logout()" style="cursor:pointer;">Logout</span>
-  </div>
-
-  <h3>Your Profile</h3>
-  <p>Email: <span id="profileEmail"></span></p>
-</div>
-
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -120,7 +9,18 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// ✅ তোমার Firebase config বসানো হয়েছে
+import { 
+  getFirestore,
+  addDoc,
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  updateDoc,
+  doc,
+  arrayUnion
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyB3lYDIr8ElAWk-jwnOWxubtVS-TeSSyOg",
   authDomain: "uyguy-ab047.firebaseapp.com",
@@ -132,60 +32,116 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// PAGE SWITCH
-window.showPage = function(page){
+// PAGE
+function showPage(page){
   document.querySelectorAll(".page").forEach(p=>p.style.display="none");
   document.getElementById(page).style.display="block";
 }
+window.showPage = showPage;
 
 // LOGIN
-window.login = function(){
-  const email = document.getElementById("loginEmail").value;
-  const pass = document.getElementById("loginPass").value;
-
-  signInWithEmailAndPassword(auth,email,pass)
-  .then(()=>{
-    showPage("home");
-  })
-  .catch(err=>{
-    document.getElementById("msg").innerText = err.message;
-  });
+window.login = ()=>{
+  signInWithEmailAndPassword(auth,loginEmail.value,loginPass.value)
+  .then(()=> showPage("home"))
+  .catch(err=> msg.innerText = err.message);
 }
 
 // SIGNUP
-window.signup = function(){
-  const email = document.getElementById("signupEmail").value;
-  const pass = document.getElementById("signupPass").value;
-
-  createUserWithEmailAndPassword(auth,email,pass)
-  .then(()=>{
-    showPage("home");
-  })
-  .catch(err=>{
-    alert(err.message);
-  });
+window.signup = ()=>{
+  createUserWithEmailAndPassword(auth,signupEmail.value,signupPass.value)
+  .then(()=> showPage("home"))
+  .catch(err=> alert(err.message));
 }
 
 // LOGOUT
-window.logout = function(){
-  signOut(auth).then(()=>{
-    showPage("login");
+window.logout = ()=>{
+  signOut(auth).then(()=> showPage("login"));
+}
+
+// ADD POST
+window.addPost = async ()=>{
+  if(!postInput.value) return;
+
+  await addDoc(collection(db,"posts"),{
+    text: postInput.value,
+    email: auth.currentUser.email,
+    time: Date.now(),
+    likes: [],
+    comments: []
+  });
+
+  postInput.value = "";
+}
+
+// 👍 LIKE
+window.likePost = async (id)=>{
+  const ref = doc(db,"posts",id);
+
+  await updateDoc(ref,{
+    likes: arrayUnion(auth.currentUser.email)
   });
 }
 
-// AUTO LOGIN CHECK
+// 💬 COMMENT
+window.commentPost = async (id)=>{
+  const text = prompt("Write comment:");
+  if(!text) return;
+
+  const ref = doc(db,"posts",id);
+
+  await updateDoc(ref,{
+    comments: arrayUnion({
+      user: auth.currentUser.email,
+      text: text
+    })
+  });
+}
+
+// 🔥 REALTIME POSTS
+function loadPosts(){
+  const q = query(collection(db,"posts"), orderBy("time","desc"));
+
+  onSnapshot(q,(snap)=>{
+    posts.innerHTML = "";
+
+    snap.forEach(docSnap=>{
+      const p = docSnap.data();
+      const id = docSnap.id;
+
+      posts.innerHTML += `
+        <div class="post">
+          <b>${p.email}</b>
+          <p>${p.text}</p>
+
+          <button onclick="likePost('${id}')">
+            👍 ${p.likes.length}
+          </button>
+
+          <button onclick="commentPost('${id}')">
+            💬 ${p.comments.length}
+          </button>
+
+          <div>
+            ${p.comments.map(c=> `<p><b>${c.user}</b>: ${c.text}</p>`).join("")}
+          </div>
+        </div>
+      `;
+    });
+  });
+}
+
+// AUTH
 onAuthStateChanged(auth,user=>{
   if(user){
-    document.getElementById("userEmail").innerText = user.email;
-    document.getElementById("profileEmail").innerText = user.email;
+    userEmail.innerText = user.email;
+    profileEmail.innerText = user.email;
     showPage("home");
+    loadPosts();
   }else{
     showPage("login");
   }
 });
 
 </script>
-
-</body>
-</html>
