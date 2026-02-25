@@ -1,147 +1,177 @@
-<script type="module">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>abedin hard team</title>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import { 
-  getFirestore,
-  addDoc,
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  updateDoc,
-  doc,
-  arrayUnion
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyB3lYDIr8ElAWk-jwnOWxubtVS-TeSSyOg",
-  authDomain: "uyguy-ab047.firebaseapp.com",
-  projectId: "uyguy-ab047",
-  storageBucket: "uyguy-ab047.firebasestorage.app",
-  messagingSenderId: "297739792713",
-  appId: "1:297739792713:web:72af3ba75fabcacb3caa98"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// PAGE
-function showPage(page){
-  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-  document.getElementById(page).style.display="block";
-}
-window.showPage = showPage;
-
-// LOGIN
-window.login = ()=>{
-  signInWithEmailAndPassword(auth,loginEmail.value,loginPass.value)
-  .then(()=> showPage("home"))
-  .catch(err=> msg.innerText = err.message);
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-// SIGNUP
-window.signup = ()=>{
-  createUserWithEmailAndPassword(auth,signupEmail.value,signupPass.value)
-  .then(()=> showPage("home"))
-  .catch(err=> alert(err.message));
+body{
+    background: linear-gradient(135deg,#eef2f7,#dbe6f6);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
 }
 
-// LOGOUT
-window.logout = ()=>{
-  signOut(auth).then(()=> showPage("login"));
+.container{
+    width:90%;
+    max-width:1100px;
+    background:#fff;
+    border-radius:25px;
+    padding:30px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.1);
+    animation:fadeIn 1.5s ease-in-out;
 }
 
-// ADD POST
-window.addPost = async ()=>{
-  if(!postInput.value) return;
-
-  await addDoc(collection(db,"posts"),{
-    text: postInput.value,
-    email: auth.currentUser.email,
-    time: Date.now(),
-    likes: [],
-    comments: []
-  });
-
-  postInput.value = "";
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
 }
 
-// 👍 LIKE
-window.likePost = async (id)=>{
-  const ref = doc(db,"posts",id);
-
-  await updateDoc(ref,{
-    likes: arrayUnion(auth.currentUser.email)
-  });
+header h1{
+    font-size:28px;
+    color:#1e2a78;
 }
 
-// 💬 COMMENT
-window.commentPost = async (id)=>{
-  const text = prompt("Write comment:");
-  if(!text) return;
-
-  const ref = doc(db,"posts",id);
-
-  await updateDoc(ref,{
-    comments: arrayUnion({
-      user: auth.currentUser.email,
-      text: text
-    })
-  });
+header p{
+    font-size:14px;
+    color:gray;
 }
 
-// 🔥 REALTIME POSTS
-function loadPosts(){
-  const q = query(collection(db,"posts"), orderBy("time","desc"));
-
-  onSnapshot(q,(snap)=>{
-    posts.innerHTML = "";
-
-    snap.forEach(docSnap=>{
-      const p = docSnap.data();
-      const id = docSnap.id;
-
-      posts.innerHTML += `
-        <div class="post">
-          <b>${p.email}</b>
-          <p>${p.text}</p>
-
-          <button onclick="likePost('${id}')">
-            👍 ${p.likes.length}
-          </button>
-
-          <button onclick="commentPost('${id}')">
-            💬 ${p.comments.length}
-          </button>
-
-          <div>
-            ${p.comments.map(c=> `<p><b>${c.user}</b>: ${c.text}</p>`).join("")}
-          </div>
-        </div>
-      `;
-    });
-  });
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
 }
 
-// AUTH
-onAuthStateChanged(auth,user=>{
-  if(user){
-    userEmail.innerText = user.email;
-    profileEmail.innerText = user.email;
-    showPage("home");
-    loadPosts();
-  }else{
-    showPage("login");
-  }
-});
+.card{
+    background:#f8faff;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.05);
+    transition:0.4s;
+    position:relative;
+    overflow:hidden;
+}
+
+.card:hover{
+    transform:translateY(-10px);
+}
+
+.card h3{
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+.number{
+    font-size:28px;
+    font-weight:bold;
+    color:#1e2a78;
+}
+
+.circle{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:10px solid #dbe6f6;
+    border-top:10px solid #1e2a78;
+    margin:15px auto;
+    animation:spin 3s linear infinite;
+}
+
+.footer{
+    margin-top:30px;
+    text-align:center;
+    font-size:14px;
+    color:#555;
+}
+
+/* Animations */
+@keyframes spin{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(30px);}
+    to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <div>
+        <h1>abedin hard team</h1>
+        <p>owner joynal abedin start working 2022</p>
+    </div>
+</header>
+
+<div class="dashboard">
+
+    <div class="card">
+        <h3>Team Power</h3>
+        <div class="number" id="power">0</div>
+    </div>
+
+    <div class="card">
+        <h3>Active Members</h3>
+        <div class="number" id="members">0</div>
+    </div>
+
+    <div class="card">
+        <h3>Work Progress</h3>
+        <div class="circle"></div>
+    </div>
+
+    <div class="card">
+        <h3>Projects Complete</h3>
+        <div class="number" id="projects">0</div>
+    </div>
+
+</div>
+
+<div class="footer">
+    © 2022 - 2026 abedin hard team | All Rights Reserved
+</div>
+
+</div>
+
+<script>
+// Counter Animation
+function counter(id, start, end, speed){
+    let obj = document.getElementById(id);
+    let current = start;
+    let increment = end / speed;
+
+    let interval = setInterval(()=>{
+        current += increment;
+        if(current >= end){
+            current = end;
+            clearInterval(interval);
+        }
+        obj.innerText = Math.floor(current);
+    },20);
+}
+
+counter("power",0,100,50);
+counter("members",0,75,50);
+counter("projects",0,120,50);
 
 </script>
+
+</body>
+</html>
