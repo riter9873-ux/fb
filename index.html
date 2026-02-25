@@ -5,231 +5,183 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Abedin Hard Team</title>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-
-<!-- Particles JS CDN -->
-<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
-
-html{
-    scroll-behavior:smooth;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
 body{
-    background:#0f2027;
-    color:white;
     overflow-x:hidden;
+    background:black;
+    color:white;
 }
 
-/* Particles Background */
-#particles-js{
+#bg{
     position:fixed;
+    top:0;
+    left:0;
     width:100%;
     height:100%;
-    z-index:-1;
+    z-index:-2;
 }
 
-/* Intro Screen */
-.intro{
+/* NAVBAR */
+nav{
     position:fixed;
+    top:0;
     width:100%;
-    height:100vh;
-    background:linear-gradient(135deg,#000428,#004e92);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    z-index:1000;
-}
-
-.intro h1{
-    font-size:50px;
-    color:#00f2ff;
-    letter-spacing:4px;
-}
-
-.typing{
-    margin-top:15px;
-    font-size:22px;
-    border-right:3px solid #00f2ff;
-    white-space:nowrap;
-    overflow:hidden;
-}
-
-/* Main Section */
-section{
-    padding:100px 10%;
-    min-height:100vh;
-}
-
-header{
+    padding:15px 8%;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:40px;
-}
-
-.logo{
-    font-size:28px;
-    font-weight:700;
-}
-
-.ceo{
-    background:rgba(255,255,255,0.1);
-    padding:8px 20px;
-    border-radius:30px;
+    background:rgba(0,0,0,0.4);
     backdrop-filter:blur(10px);
+    z-index:10;
 }
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:30px;
-}
-
-.card{
-    background:rgba(255,255,255,0.08);
-    padding:30px;
-    border-radius:20px;
-    backdrop-filter:blur(15px);
-    transition:0.6s;
-    transform:translateY(50px);
-    opacity:0;
-}
-
-.card.show{
-    transform:translateY(0);
-    opacity:1;
-}
-
-.card:hover{
-    transform:translateY(-15px);
-}
-
-.counter{
-    font-size:35px;
-    margin-top:10px;
+.logo-text{
+    font-size:22px;
+    font-weight:700;
     color:#00f2ff;
 }
 
-footer{
+/* HERO */
+.hero{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
     text-align:center;
-    padding:30px;
-    opacity:0.7;
+    padding:20px;
+}
+
+.hero h1{
+    font-size:45px;
+    color:#00f2ff;
+}
+
+.hero p{
+    margin-top:15px;
+    opacity:0.8;
+}
+
+/* 3D Logo Container */
+#logo3d{
+    width:200px;
+    height:200px;
+    margin-top:40px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+    .hero h1{font-size:30px;}
+    #logo3d{width:150px;height:150px;}
 }
 </style>
 </head>
 
 <body>
 
-<div id="particles-js"></div>
+<canvas id="bg"></canvas>
 
-<!-- Intro -->
-<div class="intro" id="intro">
+<nav>
+    <div class="logo-text">Abedin Hard Team</div>
+</nav>
+
+<section class="hero">
     <h1>CEO JOYNAL ABEDIN</h1>
-    <div class="typing" id="typing"></div>
-</div>
-
-<!-- Main Content -->
-<section id="home">
-    <header>
-        <div class="logo">Abedin Hard Team</div>
-        <div class="ceo">Start Working 2022</div>
-    </header>
-
-    <div class="cards">
-        <div class="card">
-            <h3>Team Strength</h3>
-            <div class="counter" id="c1">0</div>
-        </div>
-
-        <div class="card">
-            <h3>Active Members</h3>
-            <div class="counter" id="c2">0</div>
-        </div>
-
-        <div class="card">
-            <h3>Projects Completed</h3>
-            <div class="counter" id="c3">0</div>
-        </div>
-    </div>
+    <p>Start Working Since 2022</p>
+    <div id="logo3d"></div>
 </section>
 
-<footer>
-© 2022 - 2026 Abedin Hard Team | All Rights Reserved
-</footer>
+<!-- Background Music -->
+<audio autoplay loop>
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 
-/* Typing Effect */
-let text="Welcome To Abedin Hard Team";
-let i=0;
-function typing(){
-    if(i<text.length){
-        document.getElementById("typing").innerHTML+=text.charAt(i);
-        i++;
-        setTimeout(typing,80);
-    }
-}
-typing();
+/* ===== THREE JS SCENE ===== */
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('bg'),alpha:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-/* Hide Intro */
-setTimeout(()=>{
-    document.getElementById("intro").style.display="none";
-},3500);
+/* ===== GALAXY SWIRL ===== */
+const particlesCount = 8000;
+const geometry = new THREE.BufferGeometry();
+const positions = new Float32Array(particlesCount * 3);
 
+for(let i=0;i<particlesCount;i++){
+    const radius = Math.random()*800;
+    const angle = radius * 0.05;
+    const x = Math.cos(angle)*radius;
+    const y = (Math.random()-0.5)*50;
+    const z = Math.sin(angle)*radius;
 
-/* Counter Animation */
-function counter(id,end){
-    let obj=document.getElementById(id);
-    let count=0;
-    let interval=setInterval(()=>{
-        count++;
-        obj.innerText=count;
-        if(count>=end){
-            clearInterval(interval);
-        }
-    },20);
+    positions[i*3]=x;
+    positions[i*3+1]=y;
+    positions[i*3+2]=z;
 }
 
-setTimeout(()=>{
-    counter("c1",100);
-    counter("c2",75);
-    counter("c3",150);
-},4000);
+geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
+const material = new THREE.PointsMaterial({color:0x00f2ff,size:1});
+const galaxy = new THREE.Points(geometry,material);
+scene.add(galaxy);
 
+camera.position.z=300;
 
-/* Scroll Animation */
-window.addEventListener("scroll",()=>{
-    document.querySelectorAll(".card").forEach(card=>{
-        let position=card.getBoundingClientRect().top;
-        let screen=window.innerHeight;
-        if(position<screen-100){
-            card.classList.add("show");
-        }
-    });
+/* ===== 3D ROTATING LOGO ===== */
+const logoScene = new THREE.Scene();
+const logoCamera = new THREE.PerspectiveCamera(75,1,0.1,1000);
+const logoRenderer = new THREE.WebGLRenderer({alpha:true});
+logoRenderer.setSize(200,200);
+document.getElementById("logo3d").appendChild(logoRenderer.domElement);
+
+const geometryLogo = new THREE.TorusKnotGeometry(40,12,100,16);
+const materialLogo = new THREE.MeshStandardMaterial({color:0x00f2ff,wireframe:true});
+const knot = new THREE.Mesh(geometryLogo,materialLogo);
+logoScene.add(knot);
+
+const light = new THREE.PointLight(0xffffff,1);
+light.position.set(100,100,100);
+logoScene.add(light);
+
+logoCamera.position.z=120;
+
+/* ===== MOUSE INTERACTION ===== */
+let mouseX=0, mouseY=0;
+document.addEventListener("mousemove",(e)=>{
+    mouseX=(e.clientX/window.innerWidth-0.5)*2;
+    mouseY=(e.clientY/window.innerHeight-0.5)*2;
 });
 
+/* ===== ANIMATION LOOP ===== */
+function animate(){
+    requestAnimationFrame(animate);
 
-/* 3D Particles */
-particlesJS("particles-js", {
-  "particles": {
-    "number": { "value": 80 },
-    "size": { "value": 3 },
-    "move": { "speed": 2 },
-    "line_linked": {
-      "enable": true,
-      "opacity": 0.2
-    }
-  }
+    galaxy.rotation.y += 0.0008;
+    galaxy.rotation.x += mouseY * 0.0005;
+
+    camera.position.x += (mouseX*50 - camera.position.x)*0.05;
+    camera.lookAt(scene.position);
+
+    knot.rotation.x += 0.01;
+    knot.rotation.y += 0.01;
+
+    renderer.render(scene,camera);
+    logoRenderer.render(logoScene,logoCamera);
+}
+
+animate();
+
+/* RESPONSIVE */
+window.addEventListener("resize",()=>{
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
 });
 
 </script>
